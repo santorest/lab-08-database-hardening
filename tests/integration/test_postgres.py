@@ -112,5 +112,10 @@ def test_app_role_cannot_change_what_it_was_not_granted():
 def test_app_password_never_reaches_the_server_log():
     # Hardening re-runs as a normal operation; with pgAudit loaded, a logged ALTER ROLE ... PASSWORD would leak it.
     with closing(pg_connect("clinic")) as conn:
-        leaked = [line[:80] for line in server_log(conn) if os.environ["APP_PASSWORD"] in line]
-    assert leaked == []
+        lines = server_log(conn)
+    alter_role = [line for line in lines if "AUDIT: SESSION" in line and "ALTER ROLE" in line and "clinic_app" in line]
+    assert alter_role, (
+        "the hardening's ALTER ROLE clinic_app should be in the audit log (else this test proves nothing)"
+    )
+    leaked = [line[:80] for line in lines if os.environ["APP_PASSWORD"] in line]
+    assert leaked == [], f"app password found in {len(leaked)} log line(s); sample audit line: {alter_role[0][-160:]}"
