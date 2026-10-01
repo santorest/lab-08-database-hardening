@@ -106,7 +106,58 @@ login de la aplicación ya no es dueño de la tabla. La versión parametrizada t
 
 ## 6. Resultados
 
-Los resultados se agregan a partir de las primeras ejecuciones de CI.
+Todas las cifras provienen de ejecuciones de GitHub Actions del 2026-10-01. La referencia es la primera ejecución
+completamente verde en `main`,
+[run 36903937272](https://github.com/santorest/lab-08-database-hardening/actions/runs/36903937272): pasaron los 5
+jobs, 107 pruebas unitarias con 96,75 % de cobertura, y cada job de base de datos pasó sus 8 pruebas de integración.
+Los informes completos de esa ejecución están en `docs/example-report-mssql.html` y `docs/example-report-postgres.html`.
+
+**Antes y después del endurecimiento** (mismos controles, mismo código):
+
+| Motor | Antes: alta / media / baja | Después: alta / media / baja | No evaluados (después) |
+|---|---|---|---|
+| SQL Server 17.0.5005.3 (2025), Enterprise Developer | 7 / 6 / 1 | 0 / 0 / 0 | 0 |
+| PostgreSQL 18.6 con pgAudit | 11 / 11 / 0 | 0 / 0 / 0 | 0 |
+
+**De dónde salieron los hallazgos del "antes":**
+
+| Motor | De la configuración por defecto del contenedor | De la carga |
+|---|---|---|
+| SQL Server | 9: `sa` activo y llamado `sa` (MS-01 ×2), `sa` sin caducidad (MS-02), `remote access` activo (MS-04), cifrado no forzado (MS-05), sin TDE (MS-06), sin auditoría (MS-07), `BUILTIN\Administrators` y `NT AUTHORITY\NETWORK SERVICE` en `sysadmin` (MS-08 ×2) | 5: login de la aplicación sin política de contraseñas (MS-02), acceso de `guest` (MS-09), login de la aplicación `db_owner` (MS-10), `TRUSTWORTHY` (MS-11), encadenamiento entre bases de datos (MS-12) |
+| PostgreSQL | 13: seis reglas `trust` (PG-01 ×6), SSL apagado y una regla remota sin TLS (PG-03 ×2), una regla abierta a cualquier dirección (PG-05), sin pgAudit (PG-06), registro de conexiones apagado y un prefijo de registro incompleto (PG-07 ×3) | 9: contraseña de la aplicación guardada como MD5 (PG-02), rol de la aplicación con CREATEDB (PG-04), CREATE de `PUBLIC` en `public` (PG-08), rol de la aplicación dueño de dos tablas y de sus dos secuencias de identidad (PG-09 ×4), `SECURITY DEFINER` sin `search_path` (PG-10), documento de identidad en texto plano (PG-12) |
+
+MS-03 y PG-11 pasaron antes y después: SQL Server en Linux no admite `xp_cmdshell`, y el contenedor de PostgreSQL no
+tiene lenguajes no confiables instalados.
+
+**Idempotencia:** en ambos motores, la instantánea tomada tras una tercera ejecución del endurecimiento fue idéntica a
+la del "después" (sin contar marcas de tiempo ni la lista de sesiones activas).
+
+**Prueba de auditoría** (eventos provocados por las pruebas y luego encontrados):
+
+| Evento | SQL Server (`sys.fn_get_audit_file`) | PostgreSQL |
+|---|---|---|
+| Inicio de sesión fallido | `LGIF` de `clinic_app`: "Password did not match that for the login provided" | `FATAL 28P01 password authentication failed for user "clinic_app"` (registro del servidor) |
+| Cambio de pertenencia a un rol | `APRL` por `lab_admin`: `ALTER SERVER ROLE securityadmin ADD MEMBER [audit_probe_…]` | pgAudit `AUDIT: SESSION … ROLE, GRANT ROLE` |
+| Lectura de pacientes | `SL` sobre `patients` por `clinic_app` | pgAudit `AUDIT: OBJECT … READ, SELECT, TABLE, public.patients` |
+
+**Inyección SQL**, en ambos motores y con el login de la aplicación con mínimo privilegio: la búsqueda vulnerable
+devolvió 1 fila para "Ana Example", las 3 citas con `x' OR '1'='1` y los tres nombres de pacientes mediante una carga
+`UNION`; la búsqueda corregida devolvió la única fila correcta y nada para cada carga maliciosa. Un
+`DROP TABLE appointments` apilado a través de la búsqueda vulnerable fue rechazado (PostgreSQL: "must be owner") y la
+tabla siguió existiendo. El login de la aplicación no pudo hacer `DELETE` sobre `patients`.
+
+**Ruleset** `24324399` en `main`: pull request obligatorio, los 5 controles obligatorios y actualizados, historial
+lineal, sin force push ni borrado.
+
+**Dos pull requests de demostración, ambos bloqueados** (cerrados sin fusionar):
+
+| PR | Cambio | Qué falló | Fusión |
+|---|---|---|---|
+| [#1](https://github.com/santorest/lab-08-database-hardening/pull/1) | Quitar `forceencryption = 1` de la configuración de SQL Server | `mssql` en la puerta: MS-05 alta siguió después del endurecimiento ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784)) | Bloqueada |
+| [#2](https://github.com/santorest/lab-08-database-hardening/pull/2) | Las búsquedas "corregidas" vuelven a construir el SQL con la entrada | `unit` (la carga ya no viaja como parámetro) y los dos jobs de base de datos (las cargas devuelven filas) ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447)) | Bloqueada |
+
+En el PR #2 el linter siguió en verde: la regla de inyección SQL de ruff no ve `.format()` sobre una constante, así
+que solo las pruebas se interpusieron entre el cambio y `main`.
 
 ## 7. Lecciones
 

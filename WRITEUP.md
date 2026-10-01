@@ -101,7 +101,57 @@ version treats every payload as data.
 
 ## 6. Results
 
-Results are added from the first CI runs.
+All numbers come from GitHub Actions runs on 2026-10-01. The baseline is the first fully green run on `main`,
+[run 36903937272](https://github.com/santorest/lab-08-database-hardening/actions/runs/36903937272): all 5 jobs passed,
+107 unit tests passed with 96.75 % coverage, and each database job passed its 8 integration tests. The full reports
+from that run are in `docs/example-report-mssql.html` and `docs/example-report-postgres.html`.
+
+**Before and after hardening** (same checks, same code):
+
+| Engine | Before: High / Medium / Low | After: High / Medium / Low | Not evaluated (after) |
+|---|---|---|---|
+| SQL Server 17.0.5005.3 (2025), Enterprise Developer | 7 / 6 / 1 | 0 / 0 / 0 | 0 |
+| PostgreSQL 18.6 with pgAudit | 11 / 11 / 0 | 0 / 0 / 0 | 0 |
+
+**Where the "before" findings came from:**
+
+| Engine | From the container defaults | From the seed |
+|---|---|---|
+| SQL Server | 9: `sa` enabled and named `sa` (MS-01 ×2), `sa` without expiry (MS-02), `remote access` on (MS-04), encryption not forced (MS-05), no TDE (MS-06), no audit (MS-07), `BUILTIN\Administrators` and `NT AUTHORITY\NETWORK SERVICE` in `sysadmin` (MS-08 ×2) | 5: app login without password policy (MS-02), guest access (MS-09), app login `db_owner` (MS-10), `TRUSTWORTHY` (MS-11), cross-database chaining (MS-12) |
+| PostgreSQL | 13: six `trust` rules (PG-01 ×6), SSL off and a non-TLS remote rule (PG-03 ×2), a rule open to every address (PG-05), no pgAudit (PG-06), connection logging off and a bare log prefix (PG-07 ×3) | 9: app password stored as MD5 (PG-02), app role with CREATEDB (PG-04), `PUBLIC` CREATE on `public` (PG-08), app role owning two tables and their two identity sequences (PG-09 ×4), `SECURITY DEFINER` without `search_path` (PG-10), plaintext national ID (PG-12) |
+
+MS-03 and PG-11 passed before and after: SQL Server on Linux does not support `xp_cmdshell`, and the PostgreSQL
+container has no untrusted language installed.
+
+**Idempotence:** on both engines the snapshot taken after a third hardening run was identical to the "after" snapshot
+(timestamps and the live session list excluded).
+
+**Audit proof** (events caused by the tests, then found):
+
+| Event | SQL Server (`sys.fn_get_audit_file`) | PostgreSQL |
+|---|---|---|
+| Failed login | `LGIF` for `clinic_app`: "Password did not match that for the login provided" | `FATAL 28P01 password authentication failed for user "clinic_app"` (server log) |
+| Role membership change | `APRL` by `lab_admin`: `ALTER SERVER ROLE securityadmin ADD MEMBER [audit_probe_…]` | pgAudit `AUDIT: SESSION … ROLE, GRANT ROLE` |
+| Read of patients | `SL` on `patients` by `clinic_app` | pgAudit `AUDIT: OBJECT … READ, SELECT, TABLE, public.patients` |
+
+**SQL injection**, both engines, as the least-privileged app login: the vulnerable lookup returned 1 row for
+"Ana Example", all 3 appointments for `x' OR '1'='1`, and all three patient names through a `UNION` payload; the
+fixed lookup returned the one correct row and nothing for every payload. A stacked `DROP TABLE appointments` through
+the vulnerable lookup was refused (PostgreSQL: "must be owner"), and the table was still there. The app login could
+not `DELETE` from `patients`.
+
+**Ruleset** `24324399` on `main`: pull request required, all 5 checks required and up to date, linear history, no force
+pushes or deletion.
+
+**Two demo pull requests, both blocked** (closed unmerged):
+
+| PR | Change | What failed | Merge |
+|---|---|---|---|
+| [#1](https://github.com/santorest/lab-08-database-hardening/pull/1) | Remove `forceencryption = 1` from the SQL Server configuration | `mssql` at the gate: MS-05 High remained after hardening ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784)) | Blocked |
+| [#2](https://github.com/santorest/lab-08-database-hardening/pull/2) | The "fixed" lookups build the SQL from the input again | `unit` (the payload is no longer a parameter) and both database jobs (payloads return rows) ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447)) | Blocked |
+
+In PR #2 the linter stayed green: ruff's SQL-injection rule does not see `.format()` on a constant, so only the
+tests stood between the change and `main`.
 
 ## 7. Lessons
 
