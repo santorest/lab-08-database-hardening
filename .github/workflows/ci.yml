@@ -1,0 +1,140 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy
+
+  unit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - run: pytest --cov=dbhardening --cov-report=term-missing --cov-fail-under=90
+
+  mssql:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      MSSQL_IMAGE: mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-24.04@sha256:2b5b581621126574f3d1f75e78d3eebe8d05aedb59ad0cfdf9aa42cb0634d726
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Microsoft ODBC Driver 18 for SQL Server (pinned)
+        run: |
+          sudo apt-get update
+          if ! apt-cache show msodbcsql18 >/dev/null 2>&1; then
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/ubuntu/24.04/prod noble main" \
+              | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
+            sudo apt-get update
+          fi
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.2.1-1
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - name: Throwaway secrets for this run
+        run: scripts/ci-secrets.sh "$GITHUB_ENV"
+      - name: Lab CA in the runner's trust store
+        run: |
+          scripts/make-certs.sh certs
+          sudo cp certs/ca.crt /usr/local/share/ca-certificates/lab-08-ca.crt
+          sudo update-ca-certificates
+      - name: Before, harden, after, report, gate
+        run: scripts/run-lab.sh mssql
+      - name: Integration tests (idempotence, audit proof, demo app)
+        env:
+          LAB_ENGINE: mssql
+          MSSQL_HOST: localhost
+          MSSQL_USER: lab_admin
+          MSSQL_TRUST_SERVER_CERT: "no"
+        run: MSSQL_PASSWORD="$ADMIN_PASSWORD" pytest tests/integration -v -p no:cacheprovider
+      - name: Report in the job summary
+        if: always()
+        run: if [ -f out/mssql/report.md ]; then cat out/mssql/report.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Container log on failure
+        if: failure()
+        run: docker logs --tail 200 lab-mssql || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: mssql-results
+          path: out/mssql/
+          if-no-files-found: ignore
+
+  postgres:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - name: Throwaway secrets for this run
+        run: scripts/ci-secrets.sh "$GITHUB_ENV"
+      - name: Lab CA
+        run: scripts/make-certs.sh certs
+      - name: Before, harden, after, report, gate
+        run: scripts/run-lab.sh postgres
+      - name: Integration tests (idempotence, audit proof, demo app)
+        env:
+          LAB_ENGINE: postgres
+          PGHOST: localhost
+          PGUSER: postgres
+          PGDATABASE: clinic
+          PGSSLMODE: verify-full
+        run: PGPASSWORD="$PG_ADMIN_PASSWORD" PGSSLROOTCERT="$PWD/certs/ca.crt" pytest tests/integration -v -p no:cacheprovider
+      - name: Report in the job summary
+        if: always()
+        run: if [ -f out/postgres/report.md ]; then cat out/postgres/report.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Container log on failure
+        if: failure()
+        run: docker logs --tail 200 lab-postgres || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: postgres-results
+          path: out/postgres/
+          if-no-files-found: ignore
+
+  secrets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: gitleaks (full history, pinned by digest)
+        run: >-
+          docker run --rm -v "$PWD:/repo"
+          ghcr.io/gitleaks/gitleaks:v8.24.3@sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055
+          git /repo --redact --verbose --exit-code 1
