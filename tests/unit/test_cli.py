@@ -89,3 +89,38 @@ def test_report_writes_both_files(tmp_path, toys):
     assert code == 0
     assert html.read_text(encoding="utf-8").startswith("<!doctype html>")
     assert "| ZZ-01 | Toy | 1 finding(s) | not evaluated |" in md.read_text(encoding="utf-8")
+
+
+def test_collect_writes_a_snapshot(tmp_path, monkeypatch):
+    from .fakes import FakeServer
+    from .test_collect import PG_BASE
+
+    monkeypatch.setattr("dbhardening.cli.connector", lambda engine: FakeServer(PG_BASE))
+    out = tmp_path / "s.json"
+    assert main(["collect", "--engine", "postgres", "--out", str(out)]) == 0
+    assert json.loads(out.read_text(encoding="utf-8"))["engine"] == "postgres"
+
+
+def test_collect_connection_failure_exits_two(tmp_path, monkeypatch, capsys):
+    def refuse(engine):
+        def connect(database=None, encrypt=True):
+            raise ConnectionRefusedError("nobody home")
+
+        return connect
+
+    monkeypatch.setattr("dbhardening.cli.connector", refuse)
+    assert main(["collect", "--engine", "mssql", "--out", str(tmp_path / "s.json")]) == 2
+    assert "cannot collect from mssql: ConnectionRefusedError: nobody home" in capsys.readouterr().err
+
+
+def test_wait_times_out(monkeypatch, capsys):
+    def refuse(engine):
+        def connect(database=None, encrypt=True):
+            raise ConnectionRefusedError("starting")
+
+        return connect
+
+    monkeypatch.setattr("dbhardening.cli.connector", refuse)
+    monkeypatch.setattr("dbhardening.cli.time.sleep", lambda s: None)
+    assert main(["wait", "--engine", "postgres", "--timeout", "0"]) == 2
+    assert "not ready after 0s" in capsys.readouterr().err

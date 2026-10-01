@@ -1,12 +1,15 @@
-"""Command line: assess and report here; collect, run-sql, harden and wait are added by their modules' tasks."""
+"""Command line: collect, assess, report, run-sql, harden and wait."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import sys
+import time
 from collections.abc import Callable, Sequence
+from contextlib import closing
 from pathlib import Path
+from typing import Any
 
 from dbhardening.findings import Finding, assess
 from dbhardening.report import render_html, render_markdown, summary_text
@@ -63,7 +66,74 @@ def _register_core(sub: argparse._SubParsersAction) -> None:  # type: ignore[typ
     p.set_defaults(func=cmd_report)
 
 
-REGISTRARS: list[Callable[[argparse._SubParsersAction], None]] = [_register_core]  # type: ignore[type-arg]
+def connector(engine: str) -> Callable[..., Any]:
+    from dbhardening.connect import mssql_connect, pg_connect
+
+    if engine == "mssql":
+        return lambda database=None, encrypt=True: mssql_connect(database, encrypt)
+    return lambda database=None, encrypt=True: pg_connect(database)
+
+
+def cmd_collect(args: argparse.Namespace) -> int:
+    from dbhardening.collect_mssql import collect_mssql
+    from dbhardening.collect_pg import collect_postgres
+    from dbhardening.dbapi import describe_error
+    from dbhardening.snapshot import save_snapshot
+
+    settings = load_settings(args.settings)[args.engine]
+    try:
+        if args.engine == "mssql":
+            snapshot = collect_mssql(connector("mssql"), settings)
+        else:
+            snapshot = collect_postgres(connector("postgres"), settings)
+    except ValueError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - connection refused, login failed: a usage problem, exit 2
+        print(f"error: cannot collect from {args.engine}: {describe_error(exc)}", file=sys.stderr)
+        return 2
+    save_snapshot(snapshot, args.out)
+    print(f"{args.engine}: {len(snapshot['datasets'])} datasets -> {args.out}")
+    return 0
+
+
+def cmd_wait(args: argparse.Namespace) -> int:
+    from dbhardening.dbapi import describe_error, rows
+
+    connect = connector(args.engine)
+    deadline = time.monotonic() + args.timeout
+    last = "no attempt"
+    while True:
+        try:
+            with closing(connect(None)) as conn:
+                rows(conn, "SELECT 1 AS ready")
+            return 0
+        except ValueError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            last = describe_error(exc)
+        if time.monotonic() >= deadline:
+            print(f"error: {args.engine} not ready after {args.timeout}s: {last}", file=sys.stderr)
+            return 2
+        time.sleep(2)
+
+
+def _register_collect(sub: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
+    p = sub.add_parser("collect", help="read-only snapshot of a server")
+    p.add_argument("--engine", choices=ENGINE_CHOICES, required=True)
+    p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--settings", type=Path)
+    p.set_defaults(func=cmd_collect)
+
+    p = sub.add_parser("wait", help="wait until the server accepts a login")
+    p.add_argument("--engine", choices=ENGINE_CHOICES, required=True)
+    p.add_argument("--timeout", type=int, default=120)
+    p.set_defaults(func=cmd_wait)
+
+
+REGISTRARS: list[Callable[[argparse._SubParsersAction], None]] = [  # type: ignore[type-arg]
+    _register_core,
+    _register_collect,
+]
 
 
 def build_parser() -> argparse.ArgumentParser:

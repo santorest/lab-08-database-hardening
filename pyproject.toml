@@ -52,3 +52,7 @@ module = ["tests.*"]
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
 disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["pyodbc"]          # ships a top-level .pyi without py.typed, which mypy does not pick up
+ignore_missing_imports = true
