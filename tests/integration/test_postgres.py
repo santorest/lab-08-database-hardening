@@ -68,7 +68,8 @@ def test_audit_records_failed_login_role_change_and_select(out_dir):
     while time.monotonic() < deadline and not all(found.values()):
         with closing(pg_connect("clinic")) as conn:
             for line in server_log(conn):
-                if 'password authentication failed for user "clinic_app"' in line:
+                # csvlog doubles the quotes inside a field: for user ""clinic_app""
+                if 'password authentication failed for user ""clinic_app""' in line:
                     found["failed login"] = line
                 elif "AUDIT: SESSION" in line and "GRANT" in line and probe in line:
                     found["role change"] = line
