@@ -1,0 +1,10 @@
+flowchart TB
+  C["Default container<br/>SQL Server 2025 / PostgreSQL 18 + pgAudit"] --> S["Seed<br/>clinic schema + neglected states"]
+  S --> B["collect -> before.json<br/>(read-only queries)"]
+  B --> H["harden: SQL scripts + TLS + config<br/>restart, second pass"]
+  H --> A["collect -> after.json"]
+  A --> I["harden again -> after-again.json<br/>(must be identical)"]
+  A --> R["assess: 12 checks per engine<br/>report.html / report.md"]
+  A --> G{"any High left?"}
+  G -- yes --> F["CI fails"]
+  G -- no --> T["integration tests:<br/>audit proof - SQL-injection demo"]

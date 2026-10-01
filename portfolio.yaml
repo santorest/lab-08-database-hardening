@@ -1,0 +1,31 @@
+# Metadata used by the portfolio site's `import_lab` command (site repo). Not needed to run the lab.
+slug: database-hardening
+category: database-security
+repo_url: https://github.com/santorest/lab-08-database-hardening
+status: in_progress          # design | in_progress | complete — set to complete only after the owner confirms
+difficulty: intermediate     # beginner | intermediate | advanced
+featured: true
+# The CI results are real; the data is synthetic.
+sample_output_notice: true
+cover: diagrams/architecture.png
+writeup:
+  en: WRITEUP.md
+  es: WRITEUP.es.md
+title:
+  en: "SQL Server & PostgreSQL Hardening and Audit"
+  es: "Endurecimiento y auditoría de SQL Server y PostgreSQL"
+summary:
+  en: >-
+    The same 12 checks per engine assess a default SQL Server and PostgreSQL before and after idempotent hardening:
+    TLS, TDE/pgcrypto, least privilege, audit trail and a SQL-injection fix. Measured in CI against containers with
+    synthetic data.
+  es: >-
+    Los mismos 12 controles por motor evalúan un SQL Server y un PostgreSQL por defecto antes y después de un
+    endurecimiento idempotente: TLS, TDE/pgcrypto, mínimo privilegio, auditoría y una corrección de inyección SQL.
+    Medido en CI con contenedores y datos sintéticos.
+tools: [SQL Server, PostgreSQL, pgAudit, pgcrypto, T-SQL, Python, pytest, Docker, OpenSSL, GitHub Actions]
+mitre_attack: [T1190, T1110, T1078, T1098]
+bundle:
+  title:
+    en: Lab source bundle
+    es: Paquete de fuentes del laboratorio
