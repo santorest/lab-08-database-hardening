@@ -103,8 +103,8 @@ The `main` branch only accepts pull requests that pass all five.
 - No untrusted language is installed in the PostgreSQL container, so PG-11 passes before and after (it is unit-tested).
 - Database-scoped checks (audit specifications, app privileges, sensitive columns, `SECURITY DEFINER` functions)
   look at the application database only; guest access and `public` schema rights are checked in every database.
-- MS-10 and PG-09 follow role membership as far as their queries show; they are not a full effective-permissions
-  engine.
+- MS-10 and PG-09 (and PG-04 for superuser roles) follow role membership; they are not a full effective-permissions
+  engine (column grants, default privileges and `SET ROLE` options are not modelled).
 - Sending the audit logs to a SIEM is documented in [`docs/wazuh-shipping.md`](docs/wazuh-shipping.md) but not run.
 
 ## License

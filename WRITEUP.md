@@ -137,7 +137,8 @@ container has no untrusted language installed.
 **SQL injection**, both engines, as the least-privileged app login: the vulnerable lookup returned 1 row for
 "Ana Example", all 3 appointments for `x' OR '1'='1`, and all three patient names through a `UNION` payload; the
 fixed lookup returned the one correct row and nothing for every payload. A stacked `DROP TABLE appointments` through
-the vulnerable lookup was refused (PostgreSQL: "must be owner"), and the table was still there. The app login could
+the vulnerable lookup left the table in place on both engines; on PostgreSQL the refusal itself was observed
+("must be owner"), on SQL Server the test checks only that the table still exists. The app login could
 not `DELETE` from `patients`.
 
 **Ruleset** `24324399` on `main`: pull request required, all 5 checks required and up to date, linear history, no force

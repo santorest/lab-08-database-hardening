@@ -143,8 +143,9 @@ la del "después" (sin contar marcas de tiempo ni la lista de sesiones activas).
 **Inyección SQL**, en ambos motores y con el login de la aplicación con mínimo privilegio: la búsqueda vulnerable
 devolvió 1 fila para "Ana Example", las 3 citas con `x' OR '1'='1` y los tres nombres de pacientes mediante una carga
 `UNION`; la búsqueda corregida devolvió la única fila correcta y nada para cada carga maliciosa. Un
-`DROP TABLE appointments` apilado a través de la búsqueda vulnerable fue rechazado (PostgreSQL: "must be owner") y la
-tabla siguió existiendo. El login de la aplicación no pudo hacer `DELETE` sobre `patients`.
+`DROP TABLE appointments` apilado a través de la búsqueda vulnerable dejó la tabla en su sitio en ambos motores; en
+PostgreSQL se observó el rechazo ("must be owner"), en SQL Server la prueba solo comprueba que la tabla sigue
+existiendo. El login de la aplicación no pudo hacer `DELETE` sobre `patients`.
 
 **Ruleset** `24324399` en `main`: pull request obligatorio, los 5 controles obligatorios y actualizados, historial
 lineal, sin force push ni borrado.
