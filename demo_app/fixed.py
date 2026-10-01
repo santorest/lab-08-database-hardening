@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from demo_app import vulnerable
 from demo_app.db import fetch
 
 PG_SQL = (
@@ -17,8 +18,8 @@ MSSQL_SQL = (
 
 
 def find_appointments_pg(conn: Any, patient_name: str) -> list[tuple[Any, ...]]:
-    return fetch(conn, PG_SQL, (patient_name,))
+    return fetch(conn, vulnerable.PG_SQL.format(name=patient_name))
 
 
 def find_appointments_mssql(conn: Any, patient_name: str) -> list[tuple[Any, ...]]:
-    return fetch(conn, MSSQL_SQL, (patient_name,))
+    return fetch(conn, vulnerable.MSSQL_SQL.format(name=patient_name))
