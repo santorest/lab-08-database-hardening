@@ -1,0 +1,16 @@
+# Every setting can be overridden with `--settings FILE` (same sections and keys; unknown keys are an error).
+
+[mssql]
+allowed_sysadmins = ["lab_admin"]          # sysadmin members that are expected (sa is covered by MS-01)
+app_login = "clinic_app"                   # the application's login; its database user has the same name
+app_database = "clinic"
+app_tables = ["dbo.patients", "dbo.appointments"]
+audited_tables = ["dbo.patients"]          # tables whose SELECT must be audited (MS-07)
+
+[postgres]
+allowed_superusers = ["postgres"]          # role names are case-sensitive in PostgreSQL
+app_role = "clinic_app"
+app_database = "clinic"
+app_tables = ["public.patients", "public.appointments"]
+sensitive_columns = ["public.patients.national_id"]   # schema.table.column, must be pgcrypto bytea (PG-12)
+pgaudit_required_classes = ["role", "ddl"]

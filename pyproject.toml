@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbhardening"
+version = "1.0.0"
+description = "Assess, harden and audit SQL Server and PostgreSQL (portfolio lab 08)"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = ["psycopg[binary]>=3.3", "pyodbc>=5.3"]
+
+[project.scripts]
+dbhardening = "dbhardening.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dbhardening = ["defaults.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+markers = [
+    "mssql: needs the SQL Server lab container (LAB_ENGINE=mssql)",
+    "postgres: needs the PostgreSQL lab container (LAB_ENGINE=postgres)",
+]
+
+[tool.coverage.run]
+source = ["dbhardening"]
+omit = ["*/dbhardening/connect.py"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S608"]
+"demo_app/vulnerable.py" = ["S608"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "demo_app", "tests"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
