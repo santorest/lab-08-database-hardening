@@ -37,7 +37,9 @@ export MSSQL_IMAGE='mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-24.04@sha256:
 scripts/run-lab.sh mssql
 ```
 
-The reports land in `out/<engine>/report.html` and `report.md`.
+The reports land in `out/<engine>/report.html` and `report.md`. Example reports from a real CI run:
+[`docs/example-report-mssql.html`](docs/example-report-mssql.html) and
+[`docs/example-report-postgres.html`](docs/example-report-postgres.html).
 
 ## Checks
 

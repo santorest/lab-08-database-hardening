@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>SQL Server hardening report</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;margin:2rem;color:#1b1f24}table{border-collapse:collapse;margin:.5rem 0 1.5rem}th,td{border:1px solid #d0d7de;padding:.35rem .6rem;text-align:left;vertical-align:top}th{background:#f6f8fa}.High{color:#a40e26;font-weight:600}.Medium{color:#9a6700;font-weight:600}.Low{color:#0969da}</style></head><body>
+<h1>SQL Server: before and after hardening</h1>
+<p>Server 17.0.5005.3 Enterprise Developer Edition (64-bit) &middot; collected 2026-10-01T18:04:15Z (before) and 2026-10-01T18:04:34Z (after)</p>
+<h2>Summary</h2><table><tr><th>Severity</th><th>Before</th><th>After</th></tr>
+<tr><td>High</td><td>7</td><td>0</td></tr>
+<tr><td>Medium</td><td>6</td><td>0</td></tr>
+<tr><td>Low</td><td>1</td><td>0</td></tr>
+<tr><td>Checks not evaluated</td><td>0</td><td>0</td></tr>
+</table><table><tr><th>Check</th><th>Title</th><th>Before</th><th>After</th></tr>
+<tr><td>MS-01</td><td>sa login enabled or not renamed</td><td>2 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-02</td><td>SQL logins without password policy</td><td>2 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-03</td><td>xp_cmdshell enabled</td><td>pass</td><td>pass</td></tr>
+<tr><td>MS-04</td><td>Risky surface options enabled</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-05</td><td>Encrypted connections not forced</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-06</td><td>User database without TDE</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-07</td><td>Audit does not cover key events</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-08</td><td>Unexpected sysadmin members</td><td>2 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-09</td><td>guest user can connect</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-10</td><td>Application login over-privileged</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-11</td><td>TRUSTWORTHY database</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>MS-12</td><td>Cross-database ownership chaining</td><td>1 finding(s)</td><td>pass</td></tr>
+</table><h2>Findings before hardening</h2>
+<table><tr><th>Check</th><th>Severity</th><th>Status</th><th>Object</th><th>Detail</th></tr>
+<tr><td>MS-01</td><td class="High">High</td><td>Finding</td><td>sa</td><td>The built-in sa login is enabled.</td></tr>
+<tr><td>MS-01</td><td class="High">High</td><td>Finding</td><td>sa</td><td>The built-in sa login keeps its well-known name.</td></tr>
+<tr><td>MS-02</td><td class="Medium">Medium</td><td>Finding</td><td>sa</td><td>CHECK_EXPIRATION off on a sysadmin login.</td></tr>
+<tr><td>MS-02</td><td class="Medium">Medium</td><td>Finding</td><td>clinic_app</td><td>CHECK_POLICY off.</td></tr>
+<tr><td>MS-04</td><td class="Medium">Medium</td><td>Finding</td><td>remote access</td><td>Remote access (procedure calls from other servers) is enabled.</td></tr>
+<tr><td>MS-05</td><td class="High">High</td><td>Finding</td><td>server</td><td>Encryption is not forced: a connection made with Encrypt=no was not encrypted; 0 of 1 sessions open at collection were unencrypted.</td></tr>
+<tr><td>MS-06</td><td class="Medium">Medium</td><td>Finding</td><td>clinic</td><td>TDE is not enabled.</td></tr>
+<tr><td>MS-07</td><td class="High">High</td><td>Finding</td><td>server</td><td>No server audit is running.</td></tr>
+<tr><td>MS-08</td><td class="High">High</td><td>Finding</td><td>BUILTIN\Administrators</td><td>Member of sysadmin but not in the allowed list.</td></tr>
+<tr><td>MS-08</td><td class="High">High</td><td>Finding</td><td>NT AUTHORITY\NETWORK SERVICE</td><td>Member of sysadmin but not in the allowed list.</td></tr>
+<tr><td>MS-09</td><td class="Medium">Medium</td><td>Finding</td><td>clinic</td><td>The guest user has CONNECT.</td></tr>
+<tr><td>MS-10</td><td class="Medium">Medium</td><td>Finding</td><td>clinic_app</td><td>Member of fixed database role db_owner.</td></tr>
+<tr><td>MS-11</td><td class="High">High</td><td>Finding</td><td>clinic</td><td>TRUSTWORTHY is on.</td></tr>
+<tr><td>MS-12</td><td class="Low">Low</td><td>Finding</td><td>server</td><td>Cross-database ownership chaining is on for the whole instance.</td></tr>
+</table>
+<h2>Findings after hardening</h2>
+<table><tr><th>Check</th><th>Severity</th><th>Status</th><th>Object</th><th>Detail</th></tr>
+</table>
+</body></html>

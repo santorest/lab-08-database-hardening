@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>PostgreSQL hardening report</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;margin:2rem;color:#1b1f24}table{border-collapse:collapse;margin:.5rem 0 1.5rem}th,td{border:1px solid #d0d7de;padding:.35rem .6rem;text-align:left;vertical-align:top}th{background:#f6f8fa}.High{color:#a40e26;font-weight:600}.Medium{color:#9a6700;font-weight:600}.Low{color:#0969da}</style></head><body>
+<h1>PostgreSQL: before and after hardening</h1>
+<p>Server 18.6 (Debian 18.6-1.pgdg13+2) &middot; collected 2026-10-01T18:03:36Z (before) and 2026-10-01T18:03:37Z (after)</p>
+<h2>Summary</h2><table><tr><th>Severity</th><th>Before</th><th>After</th></tr>
+<tr><td>High</td><td>11</td><td>0</td></tr>
+<tr><td>Medium</td><td>11</td><td>0</td></tr>
+<tr><td>Low</td><td>0</td><td>0</td></tr>
+<tr><td>Checks not evaluated</td><td>0</td><td>0</td></tr>
+</table><table><tr><th>Check</th><th>Title</th><th>Before</th><th>After</th></tr>
+<tr><td>PG-01</td><td>Weak pg_hba authentication</td><td>6 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-02</td><td>MD5 password hashing</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-03</td><td>TLS not enforced</td><td>2 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-04</td><td>Unexpected superusers or privileged app role</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-05</td><td>pg_hba open to any address</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-06</td><td>pgAudit not configured</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-07</td><td>Connection logging incomplete</td><td>3 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-08</td><td>PUBLIC can create in schema public</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-09</td><td>Application role over-privileged</td><td>4 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-10</td><td>SECURITY DEFINER without fixed search_path</td><td>1 finding(s)</td><td>pass</td></tr>
+<tr><td>PG-11</td><td>Untrusted language marked trusted</td><td>pass</td><td>pass</td></tr>
+<tr><td>PG-12</td><td>Sensitive column in plaintext</td><td>1 finding(s)</td><td>pass</td></tr>
+</table><h2>Findings before hardening</h2>
+<table><tr><th>Check</th><th>Severity</th><th>Status</th><th>Object</th><th>Detail</th></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 117</td><td>local all all uses trust.</td></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 119</td><td>host all all 127.0.0.1 uses trust.</td></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 121</td><td>host all all ::1 uses trust.</td></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 124</td><td>local replication all uses trust.</td></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 125</td><td>host replication all 127.0.0.1 uses trust.</td></tr>
+<tr><td>PG-01</td><td class="High">High</td><td>Finding</td><td>pg_hba line 126</td><td>host replication all ::1 uses trust.</td></tr>
+<tr><td>PG-02</td><td class="Medium">Medium</td><td>Finding</td><td>clinic_app</td><td>Password stored as an MD5 hash.</td></tr>
+<tr><td>PG-03</td><td class="High">High</td><td>Finding</td><td>ssl</td><td>SSL is off; connections cannot be encrypted.</td></tr>
+<tr><td>PG-03</td><td class="High">High</td><td>Finding</td><td>pg_hba line 128</td><td>host all all all allows connections without TLS.</td></tr>
+<tr><td>PG-04</td><td class="High">High</td><td>Finding</td><td>clinic_app</td><td>App role has CREATEDB.</td></tr>
+<tr><td>PG-05</td><td class="Medium">Medium</td><td>Finding</td><td>pg_hba line 128</td><td>host all all all accepts clients from any address.</td></tr>
+<tr><td>PG-06</td><td class="High">High</td><td>Finding</td><td>shared_preload_libraries</td><td>pgaudit is not preloaded, so no audit records are written.</td></tr>
+<tr><td>PG-07</td><td class="Medium">Medium</td><td>Finding</td><td>log_connections</td><td>Connections are not logged.</td></tr>
+<tr><td>PG-07</td><td class="Medium">Medium</td><td>Finding</td><td>log_disconnections</td><td>Disconnections are not logged.</td></tr>
+<tr><td>PG-07</td><td class="Medium">Medium</td><td>Finding</td><td>log_line_prefix</td><td>log_line_prefix lacks user, database, client.</td></tr>
+<tr><td>PG-08</td><td class="Medium">Medium</td><td>Finding</td><td>clinic</td><td>PUBLIC has CREATE on schema public.</td></tr>
+<tr><td>PG-09</td><td class="Medium">Medium</td><td>Finding</td><td>public.patients</td><td>Owned by the app role; an owner can alter or drop it.</td></tr>
+<tr><td>PG-09</td><td class="Medium">Medium</td><td>Finding</td><td>public.patients_id_seq</td><td>Owned by the app role; an owner can alter or drop it.</td></tr>
+<tr><td>PG-09</td><td class="Medium">Medium</td><td>Finding</td><td>public.appointments</td><td>Owned by the app role; an owner can alter or drop it.</td></tr>
+<tr><td>PG-09</td><td class="Medium">Medium</td><td>Finding</td><td>public.appointments_id_seq</td><td>Owned by the app role; an owner can alter or drop it.</td></tr>
+<tr><td>PG-10</td><td class="High">High</td><td>Finding</td><td>public.patient_count</td><td>SECURITY DEFINER function without a fixed search_path.</td></tr>
+<tr><td>PG-12</td><td class="Medium">Medium</td><td>Finding</td><td>public.patients.national_id</td><td>Stored as text (plaintext); expected pgcrypto-encrypted bytea.</td></tr>
+</table>
+<h2>Findings after hardening</h2>
+<table><tr><th>Check</th><th>Severity</th><th>Status</th><th>Object</th><th>Detail</th></tr>
+</table>
+</body></html>
