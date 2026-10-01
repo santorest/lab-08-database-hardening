@@ -135,6 +135,7 @@ def test_postgres_collects_all_datasets_and_only_runs_known_queries():
         "sensitive_columns",
         "app_owned",
         "app_grants",
+        "app_memberships",
         "public_schema",
     }
     assert set(snapshot["datasets"]) == expected
@@ -155,4 +156,5 @@ def test_postgres_missing_app_role():
     server = FakeServer({**PG_BASE, "SELECT oid FROM pg_roles WHERE rolname": (["oid"], [])})
     datasets = run_pg(server, SETTINGS["postgres"])["datasets"]
     assert datasets["app_owned"]["status"] == "unavailable"
+    assert datasets["app_memberships"]["status"] == "unavailable"
     assert "role clinic_app not found" in datasets["app_grants"]["error"]

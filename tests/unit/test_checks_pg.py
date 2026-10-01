@@ -109,12 +109,14 @@ def test_pg03_hostnossl_is_flagged():
 # PG-04
 def test_pg04_superusers_are_case_sensitive_and_app_attributes():
     roles = [role("postgres", superuser=True), role("Postgres", superuser=True), role("clinic_app", createdb=True)]
-    found = {f.object: f.detail for f in run("postgres", "PG-04", roles=roles)}
+    found = {f.object: f.detail for f in run("postgres", "PG-04", roles=roles, app_memberships=[])}
     assert found == {"Postgres": "Superuser not in the allowed list.", "clinic_app": "App role has CREATEDB."}
 
 
 def test_pg04_plain_app_role_passes():
-    assert run("postgres", "PG-04", roles=[role("postgres", superuser=True), role("clinic_app")]) == []
+    assert (
+        run("postgres", "PG-04", roles=[role("postgres", superuser=True), role("clinic_app")], app_memberships=[]) == []
+    )
 
 
 # PG-05
@@ -179,7 +181,7 @@ def test_pg09_owned_objects_and_excess_grants():
         {"object": "schema public", "privilege": "USAGE"},
         {"object": "schema public", "privilege": "CREATE"},
     ]
-    details = [f.detail for f in run("postgres", "PG-09", app_owned=owned, app_grants=grants)]
+    details = [f.detail for f in run("postgres", "PG-09", app_owned=owned, app_grants=grants, app_memberships=[])]
     assert details == [
         "Owned by the app role; an owner can alter or drop it.",
         "App role holds TRUNCATE on public.patients.",
@@ -193,7 +195,7 @@ def test_pg09_least_privilege_passes():
         {"object": "public.patients", "privilege": "SELECT"},
         {"object": "public.appointments", "privilege": "INSERT"},
     ]
-    assert run("postgres", "PG-09", app_owned=[], app_grants=grants) == []
+    assert run("postgres", "PG-09", app_owned=[], app_grants=grants, app_memberships=[]) == []
 
 
 # PG-10
@@ -230,3 +232,39 @@ def test_pg12_plaintext_bytea_and_missing():
         "public.patients.national_id": "Stored as text (plaintext); expected pgcrypto-encrypted bytea.",
         "public.billing.card": "Column listed as sensitive was not found; cannot confirm it is protected.",
     }
+
+
+# Final review fixes
+def test_pg06_subtracted_class_is_missing():
+    s = pg_settings(pgaudit__log="all, -role")
+    [f] = run("postgres", "PG-06", settings=s)
+    assert f.detail == "Audit classes missing: role (current: all, -role)."
+
+
+def test_pg06_all_minus_an_unrequired_class_passes():
+    assert run("postgres", "PG-06", settings=pg_settings(pgaudit__log="all, -misc")) == []
+
+
+def test_pg04_membership_in_a_superuser_role():
+    roles = [role("postgres", superuser=True), role("clinic_app")]
+    [f] = run("postgres", "PG-04", roles=roles, app_memberships=[{"role": "postgres", "rolsuper": True}])
+    assert (f.object, f.detail) == (
+        "clinic_app",
+        "App role is a member of superuser role postgres (SET ROLE makes it a superuser).",
+    )
+
+
+def test_pg09_broad_predefined_role_membership():
+    memberships = [{"role": "pg_write_all_data", "rolsuper": False}, {"role": "clinic_readers", "rolsuper": False}]
+    [f] = run("postgres", "PG-09", app_owned=[], app_grants=[], app_memberships=memberships)
+    assert (f.object, f.detail) == ("clinic_app", "App role is a member of pg_write_all_data.")
+
+
+def test_pg09_objects_owned_through_a_role_the_app_belongs_to():
+    owned = [{"object": "public.patients", "kind": "r", "owner": "clinic_owner"}]
+    grants = [{"object": "public.billing", "privilege": "SELECT", "grantee": "clinic_readers"}]
+    details = [f.detail for f in run("postgres", "PG-09", app_owned=owned, app_grants=grants, app_memberships=[])]
+    assert details == [
+        "Owned by clinic_owner, a role the app role belongs to; an owner can alter or drop it.",
+        "App role holds SELECT on public.billing (through clinic_readers).",
+    ]

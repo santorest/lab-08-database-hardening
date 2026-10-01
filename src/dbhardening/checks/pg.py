@@ -11,6 +11,16 @@ WEAK_METHODS = frozenset({"trust", "password", "md5"})
 LOOPBACK = frozenset({"127.0.0.1", "::1"})
 UNTRUSTED_LANGUAGES = frozenset({"plpython3u", "plpythonu", "plpython2u", "plperlu", "pltclu"})
 APP_TABLE_PRIVILEGES = frozenset({"SELECT", "INSERT", "UPDATE", "DELETE"})
+# Predefined roles that reach far beyond an application's own tables.
+BROAD_PREDEFINED_ROLES = frozenset(
+    {
+        "pg_read_all_data",
+        "pg_write_all_data",
+        "pg_execute_server_program",
+        "pg_read_server_files",
+        "pg_write_server_files",
+    }
+)
 OFF_VALUES = frozenset({"", "off", "false", "0", "no"})
 Result = list[tuple[str, str]]
 Data = Mapping[str, Items]
@@ -111,7 +121,7 @@ def tls(data: Data, settings: Settings) -> Result:
     engine="postgres",
     title="Unexpected superusers or privileged app role",
     severity="High",
-    needs=["roles"],
+    needs=["roles", "app_memberships"],
     remediation="ALTER ROLE ... NOSUPERUSER NOCREATEROLE NOCREATEDB for anything not expected.",
     area="Authorization",
 )
@@ -126,6 +136,11 @@ def superusers(data: Data, settings: Settings) -> Result:
             extras = [label for label, key in (("CREATEROLE", "rolcreaterole"), ("CREATEDB", "rolcreatedb")) if r[key]]
             if extras:
                 out.append((str(app), "App role has " + ", ".join(extras) + "."))
+    for m in data["app_memberships"]:
+        if m["rolsuper"]:
+            out.append(
+                (str(app), f"App role is a member of superuser role {m['role']} (SET ROLE makes it a superuser).")
+            )
     return out
 
 
@@ -166,10 +181,12 @@ def pgaudit(data: Data, settings: Settings) -> Result:
     if "pgaudit" not in libs:
         return [("shared_preload_libraries", "pgaudit is not preloaded, so no audit records are written.")]
     current = _setting(data, "pgaudit.log") or ""
-    classes = {c.strip().casefold() for c in current.split(",") if c.strip()}
-    if "all" in classes:
-        return []
-    missing = [c for c in settings["pgaudit_required_classes"] if c not in classes]
+    entries = [c.strip().casefold() for c in current.split(",") if c.strip()]
+    # pgAudit allows subtraction ("all, -role"): work out the classes that are really logged.
+    logged = {c for c in entries if not c.startswith("-")}
+    removed = {c[1:].strip() for c in entries if c.startswith("-")}
+    required = [str(c).casefold() for c in settings["pgaudit_required_classes"]]
+    missing = [c for c in required if (c not in logged and "all" not in logged) or c in removed]
     return (
         [("pgaudit.log", f"Audit classes missing: {', '.join(missing)} (current: {current or 'none'}).")]
         if missing
@@ -232,23 +249,37 @@ def public_create(data: Data, settings: Settings) -> Result:
     engine="postgres",
     title="Application role over-privileged",
     severity="Medium",
-    needs=["app_owned", "app_grants"],
+    needs=["app_owned", "app_grants", "app_memberships"],
     remediation="Give the objects to a separate NOLOGIN owner role and grant the app only what it needs on its "
     "own tables.",
     area="Authorization",
 )
 def app_privileges(data: Data, settings: Settings) -> Result:
+    app = str(settings["app_role"])
     tables = set(settings["app_tables"])
-    out: Result = [
-        (str(r["object"]), "Owned by the app role; an owner can alter or drop it.") for r in data["app_owned"]
-    ]
+    out: Result = []
+    for r in data["app_owned"]:
+        owner = r.get("owner") or app
+        if owner == app:
+            out.append((str(r["object"]), "Owned by the app role; an owner can alter or drop it."))
+        else:
+            out.append(
+                (str(r["object"]), f"Owned by {owner}, a role the app role belongs to; an owner can alter or drop it.")
+            )
     for g in data["app_grants"]:
         obj, privilege = str(g["object"]), str(g["privilege"])
+        grantee = g.get("grantee") or app
+        through = "" if grantee == app else f" (through {grantee})"
         if obj.startswith("schema "):
             if privilege != "USAGE":
-                out.append((obj, f"App role holds {privilege} on {obj}."))
+                out.append((obj, f"App role holds {privilege} on {obj}{through}."))
         elif obj not in tables or privilege not in APP_TABLE_PRIVILEGES:
-            out.append((obj, f"App role holds {privilege} on {obj}."))
+            out.append((obj, f"App role holds {privilege} on {obj}{through}."))
+    out += [
+        (app, f"App role is a member of {m['role']}.")
+        for m in data["app_memberships"]
+        if m["role"] in BROAD_PREDEFINED_ROLES
+    ]
     return out
 
 
