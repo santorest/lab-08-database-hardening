@@ -39,25 +39,45 @@ Q_PUBLIC_SCHEMA = """SELECT current_database() AS database,
        has_schema_privilege('public', n.oid, 'CREATE') AS public_create
 FROM pg_namespace AS n WHERE n.nspname = 'public'"""
 Q_APP_ROLE = "SELECT oid FROM pg_roles WHERE rolname = %s"
-Q_APP_OWNED = """SELECT n.nspname || '.' || c.relname AS object, c.relkind::text AS kind
+# The app role plus every role it is a member of, directly or through other roles.
+APP_ROLES_CTE = """WITH RECURSIVE app AS (
+    SELECT oid FROM pg_roles WHERE rolname = %s
+    UNION
+    SELECT m.roleid FROM pg_auth_members AS m JOIN app ON m.member = app.oid)
+"""
+Q_APP_OWNED = (
+    APP_ROLES_CTE  # noqa: S608 - two constants joined; no input reaches the SQL text
+    + """SELECT n.nspname || '.' || c.relname AS object, c.relkind::text AS kind, pg_get_userbyid(c.relowner) AS owner
 FROM pg_class AS c JOIN pg_namespace AS n ON n.oid = c.relnamespace
-WHERE c.relowner = (SELECT oid FROM pg_roles WHERE rolname = %s)
+WHERE c.relowner IN (SELECT oid FROM app)
   AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f')
   AND n.nspname NOT IN ('pg_catalog', 'information_schema')
 UNION ALL
-SELECT n.nspname || '.' || p.proname AS object, 'function' AS kind
+SELECT n.nspname || '.' || p.proname AS object, 'function' AS kind, pg_get_userbyid(p.proowner) AS owner
 FROM pg_proc AS p JOIN pg_namespace AS n ON n.oid = p.pronamespace
-WHERE p.proowner = (SELECT oid FROM pg_roles WHERE rolname = %s)
+WHERE p.proowner IN (SELECT oid FROM app)
   AND n.nspname NOT IN ('pg_catalog', 'information_schema')"""
-Q_APP_GRANTS = """SELECT n.nspname || '.' || c.relname AS object, a.privilege_type AS privilege
+)
+Q_APP_GRANTS = (
+    APP_ROLES_CTE  # noqa: S608 - two constants joined; no input reaches the SQL text
+    + """SELECT n.nspname || '.' || c.relname AS object, a.privilege_type AS privilege,
+       pg_get_userbyid(a.grantee) AS grantee
 FROM pg_class AS c JOIN pg_namespace AS n ON n.oid = c.relnamespace
 CROSS JOIN LATERAL aclexplode(c.relacl) AS a
-WHERE a.grantee = (SELECT oid FROM pg_roles WHERE rolname = %s) AND a.grantee <> c.relowner
+WHERE a.grantee IN (SELECT oid FROM app) AND a.grantee <> c.relowner
   AND n.nspname NOT IN ('pg_catalog', 'information_schema')
 UNION ALL
-SELECT 'schema ' || n.nspname AS object, a.privilege_type AS privilege
+SELECT 'schema ' || n.nspname AS object, a.privilege_type AS privilege, pg_get_userbyid(a.grantee) AS grantee
 FROM pg_namespace AS n CROSS JOIN LATERAL aclexplode(n.nspacl) AS a
-WHERE a.grantee = (SELECT oid FROM pg_roles WHERE rolname = %s) AND a.grantee <> n.nspowner"""
+WHERE a.grantee IN (SELECT oid FROM app) AND a.grantee <> n.nspowner"""
+)
+Q_APP_MEMBERSHIPS = (
+    APP_ROLES_CTE  # noqa: S608 - two constants joined; no input reaches the SQL text
+    + """SELECT r.rolname AS role, r.rolsuper
+FROM app JOIN pg_roles AS r ON r.oid = app.oid
+WHERE r.rolname <> %s
+ORDER BY r.rolname"""
+)
 
 APP_DB_DATASETS = (
     ("hba", Q_HBA),
@@ -88,13 +108,14 @@ def _app(conn: Any, role: str) -> dict[str, Any]:
         exists = rows(conn, Q_APP_ROLE, (role,))
     except Exception as exc:  # noqa: BLE001
         failed = dataset_unavailable(describe_error(exc))
-        return {"app_owned": failed, "app_grants": failed}
+        return {"app_owned": failed, "app_grants": failed, "app_memberships": failed}
     if not exists:
         missing = dataset_unavailable(f"role {role} not found")
-        return {"app_owned": missing, "app_grants": missing}
+        return {"app_owned": missing, "app_grants": missing, "app_memberships": missing}
     return {
-        "app_owned": run_dataset(lambda: rows(conn, Q_APP_OWNED, (role, role))),
-        "app_grants": run_dataset(lambda: rows(conn, Q_APP_GRANTS, (role, role))),
+        "app_owned": run_dataset(lambda: rows(conn, Q_APP_OWNED, (role,))),
+        "app_grants": run_dataset(lambda: rows(conn, Q_APP_GRANTS, (role,))),
+        "app_memberships": run_dataset(lambda: rows(conn, Q_APP_MEMBERSHIPS, (role, role))),
     }
 
 

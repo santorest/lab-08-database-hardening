@@ -107,3 +107,10 @@ def test_app_role_cannot_change_what_it_was_not_granted():
         cur = conn.cursor()
         with pytest.raises(Exception, match="permission denied"):  # noqa: B017
             cur.execute("DELETE FROM patients")
+
+
+def test_app_password_never_reaches_the_server_log():
+    # Hardening re-runs as a normal operation; with pgAudit loaded, a logged ALTER ROLE ... PASSWORD would leak it.
+    with closing(pg_connect("clinic")) as conn:
+        leaked = [line[:80] for line in server_log(conn) if os.environ["APP_PASSWORD"] in line]
+    assert leaked == []
