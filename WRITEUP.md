@@ -154,6 +154,15 @@ pushes or deletion.
 In PR #2 the linter stayed green: ruff's SQL-injection rule does not see `.format()` on a constant, so only the
 tests stood between the change and `main`.
 
+**Final review fix pass** ([PR #4](https://github.com/santorest/lab-08-database-hardening/pull/4),
+[run 36908024250](https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250)). An independent
+review found two real gaps, each fixed with tests that failed first: PG-06 passed when pgAudit was configured as
+`all, -role`, which turns off a required class; and PG-04/PG-09 ignored PostgreSQL role membership, so an app role
+granted a superuser or owner role looked clean. A third suspicion, that pgAudit writes the app password to the log when
+hardening re-runs, was tested and not confirmed: a new integration test finds the `ALTER ROLE` audit line and no
+password in it, and stays as a guard. After the fixes all 5 checks passed, with 112 unit tests (96.81 % coverage) and
+both engines still at 0 High / 0 Medium / 0 Low after hardening.
+
 ## 7. Lessons
 
 - **SQL Server on Linux is not SQL Server on Windows.** The first run failed because `sp_configure 'xp_cmdshell'` is

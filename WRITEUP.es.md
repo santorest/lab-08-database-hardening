@@ -160,6 +160,17 @@ lineal, sin force push ni borrado.
 En el PR #2 el linter siguió en verde: la regla de inyección SQL de ruff no ve `.format()` sobre una constante, así
 que solo las pruebas se interpusieron entre el cambio y `main`.
 
+**Correcciones de la revisión final** ([PR #4](https://github.com/santorest/lab-08-database-hardening/pull/4),
+[run 36908024250](https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250)). Una revisión
+independiente encontró dos fallas reales, cada una corregida con pruebas que fallaron primero: PG-06 pasaba cuando
+pgAudit estaba configurado como `all, -role`, lo que apaga una clase obligatoria; y PG-04/PG-09 ignoraban la
+pertenencia a roles de PostgreSQL, así que un rol de aplicación con un rol de superusuario o de propietario parecía
+limpio. Una tercera sospecha, que pgAudit escribe la contraseña de la aplicación en el registro cuando el
+endurecimiento se vuelve a ejecutar, se probó y no se confirmó: una nueva prueba de integración encuentra la línea de
+auditoría del `ALTER ROLE` sin la contraseña, y se queda como protección. Tras las correcciones pasaron los 5 controles,
+con 112 pruebas unitarias (96,81 % de cobertura) y ambos motores siguieron en 0 alta / 0 media / 0 baja después del
+endurecimiento.
+
 ## 7. Lecciones
 
 - **SQL Server en Linux no es SQL Server en Windows.** La primera ejecución falló porque Linux rechaza
