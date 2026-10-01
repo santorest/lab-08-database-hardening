@@ -27,6 +27,9 @@ def snap(engine: str, **datasets: Any) -> dict[str, Any]:
     return new_snapshot(engine, "test", built, collected_at=COLLECTED_AT)
 
 
-def run(engine: str, check_id: str, settings: dict[str, Any] | None = None, **datasets: Any) -> list[Finding]:
-    """Findings of one check (other checks see no data and are not evaluated, which is ignored here)."""
-    return [f for f in assess(snap(engine, **datasets), settings or SETTINGS) if f.check_id == check_id]
+def run(engine: str, check_id: str, config: dict[str, Any] | None = None, /, **datasets: Any) -> list[Finding]:
+    """Findings of one check (other checks see no data and are not evaluated, which is ignored here).
+
+    The settings argument is positional-only, so a dataset may itself be called "settings" (PostgreSQL has one).
+    """
+    return [f for f in assess(snap(engine, **datasets), config or SETTINGS) if f.check_id == check_id]
