@@ -124,3 +124,24 @@ def test_wait_times_out(monkeypatch, capsys):
     monkeypatch.setattr("dbhardening.cli.time.sleep", lambda s: None)
     assert main(["wait", "--engine", "postgres", "--timeout", "0"]) == 2
     assert "not ready after 0s" in capsys.readouterr().err
+
+
+def test_harden_runs_the_default_directory(tmp_path, monkeypatch, capsys):
+    from .fakes import FakeServer
+
+    (tmp_path / "harden" / "postgres").mkdir(parents=True)
+    (tmp_path / "harden" / "postgres" / "01-a.sql").write_text("SELECT 1;", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    server = FakeServer({})
+    monkeypatch.setattr("dbhardening.cli.connector", lambda engine: server)
+    assert main(["harden", "--engine", "postgres"]) == 0
+    assert "applied 1 script(s)" in capsys.readouterr().out
+
+
+def test_failing_script_exits_two(tmp_path, monkeypatch, capsys):
+    from .fakes import FakeServer
+
+    (tmp_path / "01-a.sql").write_text("SELECT boom;", encoding="utf-8")
+    monkeypatch.setattr("dbhardening.cli.connector", lambda engine: FakeServer({"boom": RuntimeError("nope")}))
+    assert main(["run-sql", "--engine", "mssql", "--dir", str(tmp_path)]) == 2
+    assert "error: 01-a.sql: RuntimeError: nope" in capsys.readouterr().err

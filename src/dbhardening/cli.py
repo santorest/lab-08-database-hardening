@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from collections.abc import Callable, Sequence
@@ -130,9 +131,32 @@ def _register_collect(sub: argparse._SubParsersAction) -> None:  # type: ignore[
     p.set_defaults(func=cmd_wait)
 
 
+def cmd_run_sql(args: argparse.Namespace) -> int:
+    from dbhardening.sqlrunner import apply_scripts
+
+    directory = args.dir or Path("harden") / args.engine
+    connect = connector(args.engine)
+    applied = apply_scripts(args.engine, directory, lambda database: connect(database), os.environ)
+    print(f"{args.engine}: applied {len(applied)} script(s) from {directory}: {', '.join(applied)}")
+    return 0
+
+
+def _register_sql(sub: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
+    p = sub.add_parser("run-sql", help="apply the NN-name.sql scripts of a directory in order")
+    p.add_argument("--engine", choices=ENGINE_CHOICES, required=True)
+    p.add_argument("--dir", type=Path, required=True)
+    p.set_defaults(func=cmd_run_sql)
+
+    p = sub.add_parser("harden", help="apply harden/<engine>/ (re-runnable)")
+    p.add_argument("--engine", choices=ENGINE_CHOICES, required=True)
+    p.add_argument("--dir", type=Path)
+    p.set_defaults(func=cmd_run_sql)
+
+
 REGISTRARS: list[Callable[[argparse._SubParsersAction], None]] = [  # type: ignore[type-arg]
     _register_core,
     _register_collect,
+    _register_sql,
 ]
 
 
