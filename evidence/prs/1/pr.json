@@ -1,0 +1,87 @@
+{
+  "baseRefName": "main",
+  "body": "Deliberate regression to show the gate: removes \\`forceencryption = 1\\` from \\`harden/mssql/mssql.conf\\`. Expected: the \\`mssql\\` job fails at \\`assess --fail-on High\\` because MS-05 stays High after hardening. Not to be merged.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+  "closedAt": "2026-10-01T18:17:35Z",
+  "commits": [
+    {
+      "authoredDate": "2026-10-01T18:15:25Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-01T18:15:25Z",
+      "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "demo: drop forceencryption from mssql.conf (expected to be blocked)",
+      "oid": "bdf8cad02491ae40132353ae7ef4d30d0f850b32"
+    }
+  ],
+  "createdAt": "2026-10-01T18:15:29Z",
+  "headRefName": "demo/no-forced-encryption",
+  "mergedAt": null,
+  "number": 1,
+  "state": "CLOSED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:15:54Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852740",
+      "name": "lint",
+      "startedAt": "2026-10-01T18:15:37Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:15:55Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852303",
+      "name": "unit",
+      "startedAt": "2026-10-01T18:15:37Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:16:48Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852780",
+      "name": "mssql",
+      "startedAt": "2026-10-01T18:15:37Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:16:15Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852844",
+      "name": "postgres",
+      "startedAt": "2026-10-01T18:15:36Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:15:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852758",
+      "name": "secrets",
+      "startedAt": "2026-10-01T18:15:36Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    }
+  ],
+  "title": "Demo: stop forcing encrypted connections (should be blocked)",
+  "url": "https://github.com/santorest/lab-08-database-hardening/pull/1"
+}

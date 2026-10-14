@@ -1,0 +1,9 @@
+diff --git a/harden/mssql/mssql.conf b/harden/mssql/mssql.conf
+index e5d1b86..9cc67aa 100644
+--- a/harden/mssql/mssql.conf
++++ b/harden/mssql/mssql.conf
+@@ -2,4 +2,3 @@
+ [network]
+ tlscert = /var/opt/mssql/certs/server.crt
+ tlskey = /var/opt/mssql/certs/server.key
+-forceencryption = 1

@@ -1,0 +1,26 @@
+{
+  "id": 36908024250,
+  "name": "ci",
+  "head_sha": "7bedc51e65a25b80f425be668bce4d9f2d5fdc06",
+  "head_branch": "fix/final-review",
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-01T18:35:58Z",
+  "run_started_at": "2026-10-01T18:35:58Z",
+  "updated_at": "2026-10-01T18:37:19Z",
+  "run_attempt": 1,
+  "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250",
+  "artifacts": [
+    {
+      "name": "mssql-results",
+      "size_in_bytes": 8205,
+      "expired": false
+    },
+    {
+      "name": "postgres-results",
+      "size_in_bytes": 8489,
+      "expired": false
+    }
+  ]
+}

@@ -1,0 +1,560 @@
+{
+  "jobs": [
+    {
+      "id": 110514852303,
+      "run_id": 36905489784,
+      "workflow_name": "ci",
+      "head_branch": "demo/no-forced-encryption",
+      "run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/runs/36905489784",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3oEWs8AAAAZuzLRzw",
+      "head_sha": "bdf8cad02491ae40132353ae7ef4d30d0f850b32",
+      "url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/jobs/110514852303",
+      "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852303",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-01T18:15:33Z",
+      "started_at": "2026-10-01T18:15:37Z",
+      "completed_at": "2026-10-01T18:15:55Z",
+      "name": "unit",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-01T18:15:38Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:40Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-01T18:15:40Z",
+          "completed_at": "2026-10-01T18:15:41Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-01T18:15:41Z",
+          "completed_at": "2026-10-01T18:15:50Z"
+        },
+        {
+          "name": "Run pytest --cov=dbhardening --cov-report=term-missing --cov-fail-under=90",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-01T18:15:50Z",
+          "completed_at": "2026-10-01T18:15:51Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-01T18:15:51Z",
+          "completed_at": "2026-10-01T18:15:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-01T18:15:51Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-01T18:15:52Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/check-runs/110514852303",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000808,
+      "runner_name": "GitHub Actions 1000000808",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110514852740,
+      "run_id": 36905489784,
+      "workflow_name": "ci",
+      "head_branch": "demo/no-forced-encryption",
+      "run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/runs/36905489784",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3oEWs8AAAAZuzLThA",
+      "head_sha": "bdf8cad02491ae40132353ae7ef4d30d0f850b32",
+      "url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/jobs/110514852740",
+      "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852740",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-01T18:15:34Z",
+      "started_at": "2026-10-01T18:15:37Z",
+      "completed_at": "2026-10-01T18:15:54Z",
+      "name": "lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-01T18:15:38Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:40Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-01T18:15:40Z",
+          "completed_at": "2026-10-01T18:15:41Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-01T18:15:41Z",
+          "completed_at": "2026-10-01T18:15:50Z"
+        },
+        {
+          "name": "Run ruff check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-01T18:15:50Z",
+          "completed_at": "2026-10-01T18:15:50Z"
+        },
+        {
+          "name": "Run ruff format --check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-01T18:15:50Z",
+          "completed_at": "2026-10-01T18:15:50Z"
+        },
+        {
+          "name": "Run mypy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-01T18:15:50Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-01T18:15:52Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-01T18:15:52Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-01T18:15:52Z",
+          "completed_at": "2026-10-01T18:15:52Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/check-runs/110514852740",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000809,
+      "runner_name": "GitHub Actions 1000000809",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110514852758,
+      "run_id": 36905489784,
+      "workflow_name": "ci",
+      "head_branch": "demo/no-forced-encryption",
+      "run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/runs/36905489784",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3oEWs8AAAAZuzLTlg",
+      "head_sha": "bdf8cad02491ae40132353ae7ef4d30d0f850b32",
+      "url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/jobs/110514852758",
+      "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852758",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-01T18:15:34Z",
+      "started_at": "2026-10-01T18:15:36Z",
+      "completed_at": "2026-10-01T18:15:44Z",
+      "name": "secrets",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-01T18:15:37Z",
+          "completed_at": "2026-10-01T18:15:38Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-01T18:15:38Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "gitleaks (full history, pinned by digest)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-01T18:15:43Z",
+          "completed_at": "2026-10-01T18:15:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-01T18:15:43Z",
+          "completed_at": "2026-10-01T18:15:43Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/check-runs/110514852758",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000810,
+      "runner_name": "GitHub Actions 1000000810",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110514852780,
+      "run_id": 36905489784,
+      "workflow_name": "ci",
+      "head_branch": "demo/no-forced-encryption",
+      "run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/runs/36905489784",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3oEWs8AAAAZuzLTrA",
+      "head_sha": "bdf8cad02491ae40132353ae7ef4d30d0f850b32",
+      "url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/jobs/110514852780",
+      "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852780",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-01T18:15:34Z",
+      "started_at": "2026-10-01T18:15:37Z",
+      "completed_at": "2026-10-01T18:16:48Z",
+      "name": "mssql",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-01T18:15:38Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:40Z"
+        },
+        {
+          "name": "Microsoft ODBC Driver 18 for SQL Server (pinned)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-01T18:15:40Z",
+          "completed_at": "2026-10-01T18:15:53Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-01T18:15:53Z",
+          "completed_at": "2026-10-01T18:16:01Z"
+        },
+        {
+          "name": "Throwaway secrets for this run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-01T18:16:01Z",
+          "completed_at": "2026-10-01T18:16:01Z"
+        },
+        {
+          "name": "Lab CA in the runner's trust store",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-01T18:16:01Z",
+          "completed_at": "2026-10-01T18:16:03Z"
+        },
+        {
+          "name": "Before, harden, after, report, gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8,
+          "started_at": "2026-10-01T18:16:03Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Integration tests (idempotence, audit proof, demo app)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Report in the job summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Container log on failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-01T18:16:46Z",
+          "completed_at": "2026-10-01T18:16:47Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-01T18:16:47Z",
+          "completed_at": "2026-10-01T18:16:47Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/check-runs/110514852780",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000812,
+      "runner_name": "GitHub Actions 1000000812",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110514852844,
+      "run_id": 36905489784,
+      "workflow_name": "ci",
+      "head_branch": "demo/no-forced-encryption",
+      "run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/runs/36905489784",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3oEWs8AAAAZuzLT7A",
+      "head_sha": "bdf8cad02491ae40132353ae7ef4d30d0f850b32",
+      "url": "https://api.github.com/repos/santorest/lab-08-database-hardening/actions/jobs/110514852844",
+      "html_url": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784/job/110514852844",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-01T18:15:34Z",
+      "started_at": "2026-10-01T18:15:36Z",
+      "completed_at": "2026-10-01T18:16:15Z",
+      "name": "postgres",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-01T18:15:37Z",
+          "completed_at": "2026-10-01T18:15:38Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-01T18:15:38Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:39Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-01T18:15:39Z",
+          "completed_at": "2026-10-01T18:15:47Z"
+        },
+        {
+          "name": "Throwaway secrets for this run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-01T18:15:47Z",
+          "completed_at": "2026-10-01T18:15:47Z"
+        },
+        {
+          "name": "Lab CA",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-01T18:15:47Z",
+          "completed_at": "2026-10-01T18:15:48Z"
+        },
+        {
+          "name": "Before, harden, after, report, gate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-01T18:15:48Z",
+          "completed_at": "2026-10-01T18:16:10Z"
+        },
+        {
+          "name": "Integration tests (idempotence, audit proof, demo app)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-01T18:16:10Z",
+          "completed_at": "2026-10-01T18:16:12Z"
+        },
+        {
+          "name": "Report in the job summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-01T18:16:12Z",
+          "completed_at": "2026-10-01T18:16:12Z"
+        },
+        {
+          "name": "Container log on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-01T18:16:12Z",
+          "completed_at": "2026-10-01T18:16:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-01T18:16:12Z",
+          "completed_at": "2026-10-01T18:16:13Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-01T18:16:13Z",
+          "completed_at": "2026-10-01T18:16:13Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-01T18:16:13Z",
+          "completed_at": "2026-10-01T18:16:13Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-01T18:16:13Z",
+          "completed_at": "2026-10-01T18:16:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-08-database-hardening/check-runs/110514852844",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000811,
+      "runner_name": "GitHub Actions 1000000811",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
