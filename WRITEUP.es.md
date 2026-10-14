@@ -8,7 +8,6 @@ date: "2026-10-01"
 time_to_reproduce: "15–20 minutos (fork, activar Actions, ejecutar CI); más o menos lo mismo en local con Docker"
 skills: [SQL Server, PostgreSQL, pgAudit, pgcrypto, T-SQL, Python, pytest, Docker, OpenSSL, GitHub Actions]
 frameworks: [CIS Controls v8 (3.10, 3.11, 4.1, 5.4, 6.8, 8.2, 16.12), MITRE ATT&CK (T1190, T1110, T1078, T1098)]
-repo: "https://github.com/santorest/lab-08-database-hardening"
 bundle: "Publicado en el sitio del portafolio con su checksum SHA-256"
 ---
 
@@ -108,7 +107,7 @@ login de la aplicación ya no es dueño de la tabla. La versión parametrizada t
 
 Todas las cifras provienen de ejecuciones de GitHub Actions del 2026-10-01. La referencia es la primera ejecución
 completamente verde en `main`,
-[run 36903937272](https://github.com/santorest/lab-08-database-hardening/actions/runs/36903937272): pasaron los 5
+run 36903937272 (2026-10-01, archivada en `evidence/runs/36903937272/`): pasaron los 5
 jobs, 107 pruebas unitarias con 96,75 % de cobertura, y cada job de base de datos pasó sus 8 pruebas de integración.
 Los informes completos de esa ejecución están en `docs/example-report-mssql.html` y `docs/example-report-postgres.html`.
 
@@ -154,14 +153,14 @@ lineal, sin force push ni borrado.
 
 | PR | Cambio | Qué falló | Fusión |
 |---|---|---|---|
-| [#1](https://github.com/santorest/lab-08-database-hardening/pull/1) | Quitar `forceencryption = 1` de la configuración de SQL Server | `mssql` en la puerta: MS-05 alta siguió después del endurecimiento ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784)) | Bloqueada |
-| [#2](https://github.com/santorest/lab-08-database-hardening/pull/2) | Las búsquedas "corregidas" vuelven a construir el SQL con la entrada | `unit` (la carga ya no viaja como parámetro) y los dos jobs de base de datos (las cargas devuelven filas) ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447)) | Bloqueada |
+| #1 (archivado en `evidence/prs/1/`) | Quitar `forceencryption = 1` de la configuración de SQL Server | `mssql` en la puerta: MS-05 alta siguió después del endurecimiento (run 36905489784, 2026-10-01, archivada en `evidence/runs/36905489784/`) | Bloqueada |
+| #2 (archivado en `evidence/prs/2/`) | Las búsquedas "corregidas" vuelven a construir el SQL con la entrada | `unit` (la carga ya no viaja como parámetro) y los dos jobs de base de datos (las cargas devuelven filas) (run 36905503447, 2026-10-01, archivada en `evidence/runs/36905503447/`) | Bloqueada |
 
 En el PR #2 el linter siguió en verde: la regla de inyección SQL de ruff no ve `.format()` sobre una constante, así
 que solo las pruebas se interpusieron entre el cambio y `main`.
 
-**Correcciones de la revisión final** ([PR #4](https://github.com/santorest/lab-08-database-hardening/pull/4),
-[run 36908024250](https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250)). Una revisión
+**Correcciones de la revisión final** (PR #4 (archivado en `evidence/prs/4/`),
+run 36908024250 (2026-10-01, archivada en `evidence/runs/36908024250/`)). Una revisión
 independiente encontró dos fallas reales, cada una corregida con pruebas que fallaron primero: PG-06 pasaba cuando
 pgAudit estaba configurado como `all, -role`, lo que apaga una clase obligatoria; y PG-04/PG-09 ignoraban la
 pertenencia a roles de PostgreSQL, así que un rol de aplicación con un rol de superusuario o de propietario parecía

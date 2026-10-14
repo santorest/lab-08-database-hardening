@@ -1,0 +1,87 @@
+{
+  "baseRefName": "main",
+  "body": "Deliberate regression to show the gate: the \"fixed\" lookups format the patient name into the SQL text again. Expected: \\`unit\\` fails (the payload is no longer sent as a parameter) and both database jobs fail (the injection payloads return rows). Not to be merged.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+  "closedAt": "2026-10-01T18:17:39Z",
+  "commits": [
+    {
+      "authoredDate": "2026-10-01T18:15:31Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-01T18:15:31Z",
+      "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "demo: build the lookup SQL from the input again (expected to be blocked)",
+      "oid": "72757c31fba3b1772a77e61ed7ec2172c45f1bc4"
+    }
+  ],
+  "createdAt": "2026-10-01T18:15:35Z",
+  "headRefName": "demo/string-built-query",
+  "mergedAt": null,
+  "number": 2,
+  "state": "CLOSED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:16:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447/job/110514899891",
+      "name": "lint",
+      "startedAt": "2026-10-01T18:15:43Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:15:58Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447/job/110514900274",
+      "name": "unit",
+      "startedAt": "2026-10-01T18:15:43Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:16:59Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447/job/110514900432",
+      "name": "mssql",
+      "startedAt": "2026-10-01T18:15:43Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:16:17Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447/job/110514900384",
+      "name": "postgres",
+      "startedAt": "2026-10-01T18:15:43Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:15:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447/job/110514900553",
+      "name": "secrets",
+      "startedAt": "2026-10-01T18:15:43Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    }
+  ],
+  "title": "Demo: build the query from user input (should be blocked)",
+  "url": "https://github.com/santorest/lab-08-database-hardening/pull/2"
+}

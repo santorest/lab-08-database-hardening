@@ -1,0 +1,23 @@
+diff --git a/demo_app/fixed.py b/demo_app/fixed.py
+index a073b24..68bddc4 100644
+--- a/demo_app/fixed.py
++++ b/demo_app/fixed.py
+@@ -4,6 +4,7 @@
+ 
+ from typing import Any
+ 
++from demo_app import vulnerable
+ from demo_app.db import fetch
+ 
+ PG_SQL = (
+@@ -17,8 +18,8 @@
+ 
+ 
+ def find_appointments_pg(conn: Any, patient_name: str) -> list[tuple[Any, ...]]:
+-    return fetch(conn, PG_SQL, (patient_name,))
++    return fetch(conn, vulnerable.PG_SQL.format(name=patient_name))
+ 
+ 
+ def find_appointments_mssql(conn: Any, patient_name: str) -> list[tuple[Any, ...]]:
+-    return fetch(conn, MSSQL_SQL, (patient_name,))
++    return fetch(conn, vulnerable.MSSQL_SQL.format(name=patient_name))

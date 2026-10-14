@@ -8,7 +8,6 @@ date: "2026-10-01"
 time_to_reproduce: "15–20 minutes (fork, enable Actions, run CI); about the same locally with Docker"
 skills: [SQL Server, PostgreSQL, pgAudit, pgcrypto, T-SQL, Python, pytest, Docker, OpenSSL, GitHub Actions]
 frameworks: [CIS Controls v8 (3.10, 3.11, 4.1, 5.4, 6.8, 8.2, 16.12), MITRE ATT&CK (T1190, T1110, T1078, T1098)]
-repo: "https://github.com/santorest/lab-08-database-hardening"
 bundle: "Published on the portfolio site with its SHA-256 checksum"
 ---
 
@@ -102,7 +101,7 @@ version treats every payload as data.
 ## 6. Results
 
 All numbers come from GitHub Actions runs on 2026-10-01. The baseline is the first fully green run on `main`,
-[run 36903937272](https://github.com/santorest/lab-08-database-hardening/actions/runs/36903937272): all 5 jobs passed,
+run 36903937272 (2026-10-01, archived in `evidence/runs/36903937272/`): all 5 jobs passed,
 107 unit tests passed with 96.75 % coverage, and each database job passed its 8 integration tests. The full reports
 from that run are in `docs/example-report-mssql.html` and `docs/example-report-postgres.html`.
 
@@ -148,14 +147,14 @@ pushes or deletion.
 
 | PR | Change | What failed | Merge |
 |---|---|---|---|
-| [#1](https://github.com/santorest/lab-08-database-hardening/pull/1) | Remove `forceencryption = 1` from the SQL Server configuration | `mssql` at the gate: MS-05 High remained after hardening ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905489784)) | Blocked |
-| [#2](https://github.com/santorest/lab-08-database-hardening/pull/2) | The "fixed" lookups build the SQL from the input again | `unit` (the payload is no longer a parameter) and both database jobs (payloads return rows) ([run](https://github.com/santorest/lab-08-database-hardening/actions/runs/36905503447)) | Blocked |
+| #1 (archived in `evidence/prs/1/`) | Remove `forceencryption = 1` from the SQL Server configuration | `mssql` at the gate: MS-05 High remained after hardening (run 36905489784, 2026-10-01, archived in `evidence/runs/36905489784/`) | Blocked |
+| #2 (archived in `evidence/prs/2/`) | The "fixed" lookups build the SQL from the input again | `unit` (the payload is no longer a parameter) and both database jobs (payloads return rows) (run 36905503447, 2026-10-01, archived in `evidence/runs/36905503447/`) | Blocked |
 
 In PR #2 the linter stayed green: ruff's SQL-injection rule does not see `.format()` on a constant, so only the
 tests stood between the change and `main`.
 
-**Final review fix pass** ([PR #4](https://github.com/santorest/lab-08-database-hardening/pull/4),
-[run 36908024250](https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250)). An independent
+**Final review fix pass** (PR #4 (archived in `evidence/prs/4/`),
+run 36908024250 (2026-10-01, archived in `evidence/runs/36908024250/`)). An independent
 review found two real gaps, each fixed with tests that failed first: PG-06 passed when pgAudit was configured as
 `all, -role`, which turns off a required class; and PG-04/PG-09 ignored PostgreSQL role membership, so an app role
 granted a superuser or owner role looked clean. A third suspicion, that pgAudit writes the app password to the log when

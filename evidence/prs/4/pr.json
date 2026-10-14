@@ -1,0 +1,129 @@
+{
+  "baseRefName": "main",
+  "body": "Fix pass for the final review (Important findings I1–I3), each with a test that fails first. The first push carries the I3 integration test without the fix, to show it fail in CI.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+  "closedAt": "2026-10-01T18:38:07Z",
+  "commits": [
+    {
+      "authoredDate": "2026-10-01T18:30:35Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-01T18:30:35Z",
+      "messageBody": "…mbership (PG-04, PG-09); test: no app password in the server log\n\n- PG-06 works out the classes really logged, so 'all, -role' no longer passes.\n- New dataset app_memberships (recursive pg_auth_members walk from the app role). PG-04 flags membership in a\n  superuser role; PG-09 flags broad predefined roles and follows ownership and grants through role membership.\n- New integration test: the app password must never appear in the PostgreSQL server log (expected to fail\n  until the hardening stops logging it).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "fix(checks): pgAudit class subtraction (PG-06) and PostgreSQL role me…",
+      "oid": "c9ec4774f90365bf54d3ae346efb7e95e7d6b84e"
+    },
+    {
+      "authoredDate": "2026-10-01T18:33:14Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-01T18:33:14Z",
+      "messageBody": "…it line\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "test: the password check must also see the hardening's ALTER ROLE aud…",
+      "oid": "9974a74aee57a290e8951c5c56588a8f67c1264c"
+    },
+    {
+      "authoredDate": "2026-10-01T18:35:50Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-01T18:35:50Z",
+      "messageBody": "…match the fixes\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "docs: claim only the observed DROP refusal; PG-04/06/09 descriptions …",
+      "oid": "7bedc51e65a25b80f425be668bce4d9f2d5fdc06"
+    }
+  ],
+  "createdAt": "2026-10-01T18:30:40Z",
+  "headRefName": "fix/final-review",
+  "mergedAt": "2026-10-01T18:38:07Z",
+  "number": 4,
+  "state": "MERGED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:36:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250/job/110523383094",
+      "name": "lint",
+      "startedAt": "2026-10-01T18:36:02Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:36:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250/job/110523383034",
+      "name": "unit",
+      "startedAt": "2026-10-01T18:36:02Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:37:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250/job/110523382441",
+      "name": "mssql",
+      "startedAt": "2026-10-01T18:36:02Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:36:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250/job/110523382837",
+      "name": "postgres",
+      "startedAt": "2026-10-01T18:36:02Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-01T18:36:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-08-database-hardening/actions/runs/36908024250/job/110523383026",
+      "name": "secrets",
+      "startedAt": "2026-10-01T18:36:02Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    }
+  ],
+  "title": "fix: final review findings",
+  "url": "https://github.com/santorest/lab-08-database-hardening/pull/4"
+}
